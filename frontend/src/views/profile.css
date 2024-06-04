@@ -1,0 +1,208 @@
+.profile-container {
+  width: 100%;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+}
+.profile-container1 {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.profile-profile-info {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-left: 20px;
+}
+
+.profile-username {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+.profile-count-game {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: center;
+}
+.profile-best-roles {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: center;
+}
+.profile-game {
+  flex: 0 0 auto;
+  width: 200px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.profile-game1 {
+  flex: 0 0 auto;
+  width: 200px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+@media(max-width: 767px) {
+  .profile-button {
+    fill: var(--dl-color-gray-white);
+    color: var(--dl-color-gray-white);
+    width: 321px;
+    height: 52px;
+    align-self: center;
+    margin-top: var(--dl-space-space-threeunits);
+    background-color: #1461bb;
+  }
+  .profile-button1 {
+    fill: var(--dl-color-gray-white);
+    color: var(--dl-color-gray-white);
+    width: 321px;
+    height: 52px;
+    align-self: center;
+    margin-top: var(--dl-space-space-threeunits);
+    background-color: #1461bb;
+  }
+}
+@media(max-width: 479px) {
+  .profile-container {
+    background-color: #126EB0;
+  }
+  .profile-container1 {
+    width: 382px;
+    height: 100%;
+    margin-top: var(--dl-space-space-oneandhalfunits);
+    margin-right: 0px;
+  }
+  .profile-text {
+    color: var(--dl-color-secondary-grey400);
+    margin-top: var(--dl-space-space-threeunits);
+  }
+  .profile-profile-info {
+    width: 100%;
+    align-self: flex-start;
+    margin-top: var(--dl-space-space-oneandhalfunits);
+    align-items: center;
+  }
+  .profile-username {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .profile-text03 {
+    fill: var(--dl-color-secondary-grey400);
+    color: var(--dl-color-secondary-grey400);
+  }
+  .profile-text06 {
+    fill: var(--dl-color-secondary-grey400);
+    color: var(--dl-color-secondary-grey400);
+    margin-right: var(--dl-space-space-threeunits);
+  }
+  .profile-count-game {
+    width: 100%;
+    height: 18px;
+    margin-top: var(--dl-space-space-halfunit);
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .profile-text09 {
+    fill: var(--dl-color-secondary-grey400);
+    color: var(--dl-color-secondary-grey400);
+    align-self: flex-start;
+  }
+  .profile-text12 {
+    fill: var(--dl-color-secondary-grey400);
+    color: var(--dl-color-secondary-grey400);
+    align-self: flex-start;
+    margin-right: var(--dl-space-space-sixunits);
+  }
+  .profile-best-roles {
+    width: 100%;
+    height: 18px;
+    margin-top: var(--dl-space-space-halfunit);
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .profile-text15 {
+    fill: var(--dl-color-secondary-grey400);
+    color: var(--dl-color-secondary-grey400);
+    align-self: flex-start;
+  }
+  .profile-text18 {
+    fill: var(--dl-color-secondary-grey400);
+    color: var(--dl-color-secondary-grey400);
+    align-self: flex-start;
+    margin-right: var(--dl-space-space-sixunits);
+  }
+  .profile-game {
+    width: 345px;
+    height: 196px;
+    margin-top: var(--dl-space-space-threeunits);
+    align-items: center;
+    border-color: #e2e0e0;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: var(--dl-radius-radius-radius8);
+  }
+  .profile-text21 {
+    fill: var(--dl-color-secondary-grey400);
+    color: var(--dl-color-secondary-grey400);
+    font-size: 21px;
+    font-style: normal;
+    margin-top: var(--dl-space-space-oneandhalfunits);
+    font-weight: 700;
+  }
+  .profile-text22 {
+    fill: var(--dl-color-secondary-grey400);
+    color: var(--dl-color-secondary-grey400);
+    font-size: 21px;
+    font-style: normal;
+    margin-top: var(--dl-space-space-oneandhalfunits);
+    font-weight: 700;
+  }
+  .profile-button {
+    width: 310px;
+    height: 36px;
+    margin-top: var(--dl-space-space-oneandhalfunits);
+    margin-bottom: var(--dl-space-space-halfunit);
+    background-color: #228eb1;
+  }
+  .profile-game1 {
+    width: 345px;
+    height: 196px;
+    margin-top: var(--dl-space-space-threeunits);
+    align-items: center;
+    border-color: #e2e0e0;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: var(--dl-radius-radius-radius8);
+  }
+  .profile-text26 {
+    fill: var(--dl-color-secondary-grey400);
+    color: var(--dl-color-secondary-grey400);
+    font-size: 21px;
+    font-style: normal;
+    margin-top: var(--dl-space-space-oneandhalfunits);
+    font-weight: 700;
+  }
+  .profile-text27 {
+    fill: var(--dl-color-secondary-grey400);
+    color: var(--dl-color-secondary-grey400);
+    font-size: 21px;
+    font-style: normal;
+    margin-top: var(--dl-space-space-oneandhalfunits);
+    font-weight: 700;
+  }
+  .profile-button1 {
+    width: 310px;
+    height: 36px;
+    margin-top: var(--dl-space-space-oneandhalfunits);
+    margin-bottom: var(--dl-space-space-halfunit);
+  }
+}
