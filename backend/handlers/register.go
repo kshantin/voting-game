@@ -1,28 +1,44 @@
 package handlers
 
 import (
-	"encoding/json"
-	"net/http"
-	"fmt"
+    "context"
+    "encoding/json"
+    "net/http"
+    "time"
+    "backend/models"
+    "backend/database"
+    "golang.org/x/crypto/bcrypt"
 )
 
-type User struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var user User
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+    var user models.User
+    err := json.NewDecoder(r.Body).Decode(&user)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
 
-	// Здесь добавьте логику для сохранения пользователя в базу данных
-	fmt.Printf("Received user: %+v\n", user)
+    // Хэширование пароля
+    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+    if err != nil {
+        http.Error(w, "Failed to hash password", http.StatusInternalServerError)
+        return
+    }
+    user.Password = string(hashedPassword)
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
+    // Подключение к базе данных
+    conn := database.GetDB()
+
+    // Вставка нового пользователя
+    _, err = conn.Exec(context.Background(),
+        "INSERT INTO users (email, username, password, created_at) VALUES ($1, $2, $3, $4)",
+        user.Email, user.Username, user.Password, time.Now())
+
+    if err != nil {
+        http.Error(w, "Failed to register user", http.StatusInternalServerError)
+        return
+    }
+
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
 }

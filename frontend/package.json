@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@teleporthq/react-components": "latest",
     "@craco/craco": "^7.0.0-alpha.0",
     "axios": "^1.7.2",
     "prop-types": "15.7.2",

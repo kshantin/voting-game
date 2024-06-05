@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import axios from 'axios';
-
 import Header from '../components/header';
 import './login.css';
 
@@ -26,10 +25,9 @@ const Login = (props) => {
       });
 
       if (response.status === 200) {
-        // Авторизация успешна, перенаправьте пользователя или выполните другие действия
         console.log('Login successful', response.data);
-        // Пример перенаправления
-        // window.location.href = '/dashboard';
+        localStorage.setItem('token', response.data.token);
+        window.location.href = '/create-page';
       } else {
         setError('Invalid credentials');
       }

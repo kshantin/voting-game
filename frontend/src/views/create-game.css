@@ -1,0 +1,74 @@
+.create-game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #126EB0;
+  font-family: Arial, sans-serif;
+}
+
+.create-game-title {
+  font-size: 2em;
+  margin-bottom: 20px;
+  text-align: center;
+  color: white
+}
+
+.create-game-inputs {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.create-game-input {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.create-game-input label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.create-game-input .input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.create-game-error {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.create-game-submit {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.create-game-submit .button {
+  padding: 10px 20px;
+  font-size: 1em;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-game-submit .button:hover {
+  background-color: #0056b3;
+}

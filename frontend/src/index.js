@@ -14,6 +14,7 @@ import Voting from './views/voting'
 import Login from './views/login'
 import Registr from './views/registr'
 import NotFound from './views/not-found'
+import CreateGame from './views/create-game'
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route component={Voting} exact path="/voting" />
         <Route component={Login} exact path="/" />
         <Route component={Registr} exact path="/registr" />
+        <Route component={CreateGame} exact path="/create-game" />
         <Route component={NotFound} path="**" />
         <Redirect to="**" />
       </Switch>
