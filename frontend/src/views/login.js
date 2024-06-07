@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import axios from 'axios';
+
 import Header from '../components/header';
 import './login.css';
 
@@ -25,9 +26,9 @@ const Login = (props) => {
       });
 
       if (response.status === 200) {
-        console.log('Login successful', response.data);
         localStorage.setItem('token', response.data.token);
-        window.location.href = '/create-page';
+        console.log('Login successful', response.data);
+        window.location.href = '/create-game'; // Example redirect
       } else {
         setError('Invalid credentials');
       }

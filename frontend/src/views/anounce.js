@@ -1,39 +1,77 @@
-import React, { useEffect, useState } from 'react'
-import { Helmet } from 'react-helmet'
-import Header from '../components/header'
-import './anounce.css'
+import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet';
+import Header from '../components/header';
+import './anounce.css';
 
 const Anounce = (props) => {
-  const [games, setGames] = useState([])
+  const [games, setGames] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/games')
-      .then(response => response.json())
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log("Вы не авторизованы");
+      return;
+    }
+    
+    fetch('http://localhost:8080/api/games', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+      .then(response => {
+        if (!response.ok) {
+          return response.text().then(text => { throw new Error(text) });
+        }
+        return response.json();
+      })
       .then(data => setGames(data))
-  }, [])
+      .catch(error => console.error("Error fetching games:", error));
+  }, []);
 
   const joinGame = (gameId) => {
-    const userId = 1 // замените на ID текущего пользователя
-    fetch(`http://localhost:8080/api/games/join`, {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log("Вы не авторизованы");
+      return;
+    }
+
+    fetch('http://localhost:8080/api/games/join', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
-      body: new URLSearchParams({
-        'user_id': userId,
-        'game_id': gameId
-      })
+      body: JSON.stringify({ gameId }),
     })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          return response.text().then(text => { throw new Error(text) });
+        }
+        return response.json();
+      })
       .then(data => {
         if (data.success) {
-          alert('Вы успешно записались на игру')
-          // обновить состояние или сделать повторный запрос данных игр
+          console.log('Вы успешно записались на игру');
+          // Обновить список игр после успешной записи
+          setGames(prevGames => prevGames.map(game => {
+            if (game.id === gameId) {
+              return { ...game, currentPlayers: game.currentPlayers + 1 };
+            }
+            return game;
+          }));
         } else {
-          alert('Ошибка при записи на игру')
+          console.log('Ошибка при записи на игру');
         }
       })
-  }
+      .catch(error => console.error("Error joining game:", error));
+  };
+
+  const formatTime = (timeString) => {
+    const time = new Date(timeString);
+    const hours = time.getHours().toString().padStart(2, '0');
+    const minutes = time.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
 
   return (
     <div className="anounce-container">
@@ -49,7 +87,7 @@ const Anounce = (props) => {
       {games.map((game) => (
         <div key={game.id} className="anounce-game-card">
           <span className="anounce-text03">Игра</span>
-          <span className="anounce-text04">{game.game_name}</span>
+          <span className="anounce-text04">{game.gameName}</span>
           <div className="anounce-info">
             <div className="anounce-container1">
               <span className="anounce-text05">Дата</span>
@@ -57,7 +95,7 @@ const Anounce = (props) => {
             </div>
             <div className="anounce-container2">
               <span className="anounce-text07">Время</span>
-              <span className="anounce-text08">{game.time}</span>
+              <span className="anounce-text08">{formatTime(game.time)}</span>
             </div>
             <div className="anounce-container3">
               <span className="anounce-text11">
@@ -65,7 +103,7 @@ const Anounce = (props) => {
                 <br></br>
               </span>
               <span className="anounce-text14">
-                <span>{game.current_players}/{game.number_of_players}</span>
+                <span>{game.currentPlayers}/{game.numberOfPlayers}</span>
                 <br></br>
               </span>
             </div>
@@ -83,7 +121,7 @@ const Anounce = (props) => {
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default Anounce
+export default Anounce;
