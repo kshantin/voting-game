@@ -13,70 +13,45 @@ import (
 )
 
 func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
-	var gameCreate models.GameCreate // отсюда получаем строки Data и Time
-
-	err := json.NewDecoder(r.Body).Decode(&gameCreate)
+	userID, err := getUserIDFromToken(r)
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	fmt.Printf("Data: %v\n", gameCreate.Date)
-	fmt.Printf("Time: %v\n", gameCreate.Time)
+	var game models.GameCreate
+	err = json.NewDecoder(r.Body).Decode(&game)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-	date, err := time.Parse("2006-01-02", gameCreate.Date)
+	date, err := time.Parse("2006-01-02", game.Date)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Invalid date format: %v", err), http.StatusBadRequest)
 		return
 	}
 
-	timeValue, err := time.Parse("15:04", gameCreate.Time)
+	timeValue, err := time.Parse("15:04:05", game.Time)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Invalid time format: %v", err), http.StatusBadRequest)
 		return
 	}
 
-	// gameCreate.Date = date.Format("2006-01-02")
-	// gameCreate.Time = timeValue.Format("15:04")
+	game.Date = date.Format("2006-01-02")
+	game.Time = timeValue.Format("15:04:05")
+	game.CreatedBy = userID
 
-	fmt.Printf("date: %v qwer\n", date)
-	fmt.Printf("timeValue: %v\n\n", timeValue)
-
-	fmt.Printf("gameCreate.Date: %v qwer\n", gameCreate.Date)
-	fmt.Printf("gameCreate.time: %v\n\n", gameCreate.Time)
-
-	// gameDateTime := time.Date(
-	// 	date.Year(),
-	// 	date.Month(),
-	// 	date.Day(),
-	// 	timeValue.Hour(),
-	// 	timeValue.Minute(),
-	// 	0,
-	// 	0,
-	// 	date.Location(),
-	// )
-
-	// fmt.Printf("dateTime: %v", gameDateTime)
-	conn := database.GetDB()
-	_, err = conn.Exec(
-		context.Background(),
-		"INSERT INTO games (gameName, numberOfPlayers, currentPlayers, description, date, time, createdBy, createdAt) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-		gameCreate.GameName,
-		gameCreate.NumberOfPlayers,
-		gameCreate.CurrentPlayers,
-		gameCreate.Description,
-		date,
-		timeValue,
-		gameCreate.CreatedBy,
-		time.Now(),
-	)
+	db := database.GetDB()
+	_, err = db.Exec(context.Background(), "INSERT INTO games (gameName, numberOfPlayers, currentPlayers, description, date, time, createdBy) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+		game.GameName, game.NumberOfPlayers, game.CurrentPlayers, game.Description, game.Date, game.Time, game.CreatedBy)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Database insert error: %v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Unable to create game: %v", err), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"status": "game created"})
+	json.NewEncoder(w).Encode(map[string]string{"message": "Game created successfully"})
 }
 
 func GetGamesHandler(w http.ResponseWriter, r *http.Request) {

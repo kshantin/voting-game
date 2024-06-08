@@ -31,46 +31,80 @@ const CreateGame = (props) => {
     setTime(e.target.value);
   };
 
- const handleSubmit = async () => {
-  if (!gameName || !numberOfPlayers) {
-    setError('Game name and number of players are required.');
-    return;
-  }
+  const handleSubmit = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const payload = {
+        gameName,
+        numberOfPlayers: parseInt(numberOfPlayers, 10),
+        description,
+        date,
+        time: time + ':00',
+      };
 
-  try {
-    const token = localStorage.getItem('token');
-    const payload = {
-      gameName,
-      numberOfPlayers: parseInt(numberOfPlayers, 10),
-      description,
-      date,
-      time,
-    };
+      const response = await axios.post('http://localhost:8080/api/games', payload, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-    console.log('Sending payload:', payload);  // Логирование данных перед отправкой
-
-    const response = await axios.post('http://localhost:8080/api/games', payload, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (response.status === 201) {
-      console.log('Game created successfully', response.data);
-      // Перенаправление после успешного создания игры, например:
-      // window.location.href = '/games';
-    } else {
-      setError('Failed to create game');
+      if (response.status === 201) {
+        console.log('Game created successfully', response.data);
+        // Перенаправление после успешного создания игры, например:
+        // window.location.href = '/games';
+      } else {
+        setError('Failed to create game');
+      }
+    } catch (error) {
+      if (error.response) {
+        setError(error.response.data.message);
+      } else {
+        setError('An error occurred during game creation');
+      }
+      console.error('Game creation error', error);
     }
-  } catch (error) {
-    if (error.response) {
-      setError(error.response.data.message);
-    } else {
-      setError('An error occurred during game creation');
-    }
-    console.error('Game creation error', error);
-  }
-};
+  };
+// Версия 1 
+//  const handleSubmit = async () => {
+//   if (!gameName || !numberOfPlayers) {
+//     setError('Game name and number of players are required.');
+//     return;
+//   }
+
+//   try {
+//     const token = localStorage.getItem('token');
+//     const payload = {
+//       gameName,
+//       numberOfPlayers: parseInt(numberOfPlayers, 10),
+//       description,
+//       date,
+//       time: time + ':00',
+//     };
+
+//     console.log('Sending payload:', payload);  // Логирование данных перед отправкой
+
+//     const response = await axios.post('http://localhost:8080/api/games', payload, {
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//       },
+//     });
+
+//     if (response.status === 201) {
+//       console.log('Game created successfully', response.data);
+//       // Перенаправление после успешного создания игры, например:
+//       // window.location.href = '/games';
+//     } else {
+//       setError('Failed to create game');
+//     }
+//   } catch (error) {
+//     if (error.response) {
+//       setError(error.response.data.message);
+//     } else {
+//       setError('An error occurred during game creation');
+//     }
+//     console.error('Game creation error', error);
+//   }
+// };
 
   return (
     <div className="create-game-container">

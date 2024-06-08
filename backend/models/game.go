@@ -25,3 +25,11 @@ type GameCreate struct {
 	CreatedBy       int       `json:"createdBy"`
 	CreatedAt       time.Time `json:"createdAt"`
 }
+
+type GameGet struct {
+	ID          int       `json:"id"`
+	GameName    string    `json:"gameName"`
+	Date        time.Time `json:"date"`
+	Time        time.Time `json:"time"`
+	Description string    `json:"description"`
+}

@@ -1,11 +1,49 @@
-import React from 'react'
-
-import { Helmet } from 'react-helmet'
-
-import Header from '../components/header'
-import './profile.css'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import jwtDecode from 'jwt-decode';
+import { Helmet } from 'react-helmet';
+import Header from '../components/header';
+import './profile.css';
 
 const Profile = (props) => {
+  const [profile, setProfile] = useState(null);
+  const [error, setError] = useState('');
+  const [userID, setUserID] = useState(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.log("Вы не авторизованы");
+          return;
+        }
+
+        const decodedToken = jwtDecode(token);
+        setUserID(decodedToken.userId); // Сохранение userID в состояние
+        console.log(userID);
+        const response = await axios.get('http://localhost:8080/api/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        setProfile(response.data);
+      } catch (err) {
+        setError(`Failed to fetch profile: ${err.message}`);
+        console.error('Error fetching profile:', err);
+      }
+    };
+    fetchProfile(); 
+  }, []);
+
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
+
+  if (!profile) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="profile-container">
       <Helmet>
@@ -16,66 +54,55 @@ const Profile = (props) => {
       <div className="profile-container1">
         <h1 className="profile-text">
           <span>Мой профиль</span>
-          <br></br>
+          <br />
         </h1>
         <div className="profile-profile-info">
           <div className="profile-username">
             <span className="profile-text03">
               <span>Имя пользователя: </span>
-              <br></br>
+              <br />
             </span>
             <span className="profile-text06">
-              <span>Кирилл</span>
-              <br></br>
+              <span>{profile.user.username}</span>
+              <br />
             </span>
           </div>
           <div className="profile-count-game">
             <span className="profile-text09">
               <span>Количество игр:</span>
-              <br></br>
+              <br />
             </span>
             <span className="profile-text12">
-              <span>2</span>
-              <br></br>
+              <span>{profile.gameCount}</span>
+              <br />
             </span>
           </div>
           <div className="profile-best-roles">
             <span className="profile-text15">
               <span>Лучшие роли:</span>
-              <br></br>
+              <br />
             </span>
             <span className="profile-text18">
               <span>1</span>
-              <br></br>
+              <br />
             </span>
           </div>
         </div>
-        <div className="profile-game">
-          <span className="profile-text21">“Князь” и “Слалом”</span>
-          <span className="profile-text22">23.12.2023</span>
-          <button type="button" className="button profile-button">
-            <span>
-              <span>Голосование</span>
-              <br></br>
-            </span>
-          </button>
-        </div>
-        <div className="profile-game1">
-          <span className="profile-text26">
-            &quot;Управляй из любой точки&quot;
-          </span>
-          <span className="profile-text27">10.12.2023</span>
-          <button type="button" className="button profile-button1">
-            <span>
-              <span>Отчёт</span>
-              <br></br>
-            </span>
-          </button>
-        </div>
+        {profile.games.map((game) => (
+          <div key={game.id} className="profile-game">
+            <span className="profile-text21">{game.gameName}</span>
+            <span className="profile-text22">{new Date(game.date).toLocaleDateString()}</span>
+            <button type="button" className="button profile-button">
+              <span>
+                <span>Голосование</span>
+                <br />
+              </span>
+            </button>
+          </div>
+        ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Profile
-// Теперь давай создадим страницу профиля. На странице должны отображаться имя, количества игр, лучшие роли игрока, кроме того необходимо выводить . Исходя из кода ниже напиши обработчики для этих полей,   
+export default Profile;

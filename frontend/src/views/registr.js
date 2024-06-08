@@ -138,7 +138,7 @@ const Registr = (props) => {
             <br></br>
           </span>
           <input
-            type="text"
+            type="name"
             value={username}
             onChange={handleUsernameChange}
             placeholder="Имя пользователя"

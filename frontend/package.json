@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@teleporthq/react-components": "latest",
     "@craco/craco": "^7.0.0-alpha.0",
+    "@teleporthq/react-components": "latest",
     "axios": "^1.7.2",
+    "jwt-decode": "^3.1.2",
     "prop-types": "15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

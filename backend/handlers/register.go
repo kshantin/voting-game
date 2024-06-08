@@ -14,8 +14,13 @@ import (
 )
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	userID, err := getUserIDFromToken(r)
+	if err != nil {
+		http.Error(w, "Unauthorized: "+err.Error(), http.StatusUnauthorized)
+		return
+	}
 	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
+	err = json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		log.Printf("Error decoding request body: %v", err)
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
@@ -36,8 +41,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Вставка нового пользователя
 	_, err = conn.Exec(context.Background(),
-		"INSERT INTO users (email, username, password, createdAt) VALUES ($1, $2, $3, $4)",
-		user.Email, user.Username, user.Password, time.Now())
+		"INSERT INTO users (id, email, username, password, createdAt) VALUES ($1, $2, $3, $4, $5)",
+		userID, user.Email, user.Username, user.Password, time.Now())
 
 	if err != nil {
 		log.Printf("Error inserting user into database: %v", err)
