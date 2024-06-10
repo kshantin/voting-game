@@ -1,15 +1,19 @@
 package handlers
 
 import (
-	"backend/database"
-	"backend/models"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+
+	"backend/database"
+	"backend/models"
 )
 
-// GetCriteriaHandler handles the request to get voting criteria
-func GetCriteriaHandler(w http.ResponseWriter, r *http.Request) {
+// Получить критерии голосования
+func GetCriteria(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received request for criteria")
+
 	conn := database.GetDB()
 	rows, err := conn.Query(context.Background(), "SELECT id, name FROM criteria")
 	if err != nil {
@@ -29,23 +33,23 @@ func GetCriteriaHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(criteria)
+	response, _ := json.Marshal(criteria)
+	fmt.Println("Sending criteria response:", string(response)) // Логирование отправляемого JSON
+	w.Write(response)
 }
 
-// GetParticipantsHandler handles the request to get participants of a game
-func GetParticipantsHandler(w http.ResponseWriter, r *http.Request) {
-	conn := database.GetDB()
-	gameID := r.URL.Query().Get("gameId")
-	if gameID == "" {
-		http.Error(w, "gameId is required", http.StatusBadRequest)
-		return
-	}
+// Получить участников игры
+func GetParticipants(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received request for participants")
+	gameId := r.URL.Query().Get("gameId")
 
-	rows, err := conn.Query(context.Background(), `
-		SELECT u.id, u.username
-		FROM users u
-		JOIN registrations r ON u.id = r.userId
-		WHERE r.gameId = $1`, gameID)
+	fmt.Println("Game ID:", gameId)
+	conn := database.GetDB()
+	rows, err := conn.Query(
+		context.Background(),
+		"SELECT id, username FROM users WHERE id IN (SELECT userId FROM registrations WHERE gameId=$1)",
+		gameId,
+	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -63,11 +67,18 @@ func GetParticipantsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(participants)
+	response, _ := json.Marshal(participants)
+	fmt.Println(
+		"Sending participants response:",
+		string(response),
+	) // Логирование отправляемого JSON
+	w.Write(response)
 }
 
-// VoteHandler handles the request to submit votes
-func VoteHandler(w http.ResponseWriter, r *http.Request) {
+// Принять голос
+func SubmitVote(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received request for submitting votes")
+
 	var votes []models.Vote
 	if err := json.NewDecoder(r.Body).Decode(&votes); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -75,11 +86,15 @@ func VoteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	conn := database.GetDB()
-
 	for _, vote := range votes {
-		_, err := conn.Exec(context.Background(), `
-			INSERT INTO votes (gameId, voterId, participantId, criterionId)
-			VALUES ($1, $2, $3, $4)`, vote.GameID, vote.VoterID, vote.ParticipantID, vote.CriterionID)
+		_, err := conn.Exec(
+			context.Background(),
+			"INSERT INTO votes (gameId, voterId, participantId, criterionId) VALUES ($1, $2, $3, $4)",
+			vote.GameID,
+			vote.VoterID,
+			vote.ParticipantID,
+			vote.CriterionID,
+		)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -87,5 +102,5 @@ func VoteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"status": "success"})
+	fmt.Println("Votes submitted successfully")
 }

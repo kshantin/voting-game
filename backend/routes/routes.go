@@ -14,10 +14,10 @@ func SetupRouter() *mux.Router {
 	r.HandleFunc("/api/games", handlers.CreateGameHandler).Methods("POST")
 	r.HandleFunc("/api/games", handlers.GetGamesHandler).Methods("GET")
 	r.HandleFunc("/api/games/join", handlers.JoinGameHandler).Methods("POST")
-	// r.HandleFunc("/api/players", handlers.GetPlayers).Methods("GET")
-	r.HandleFunc("/api/voting/criteria", handlers.GetCriteriaHandler).Methods("GET")
-	r.HandleFunc("/api/voting/participants", handlers.GetParticipantsHandler).Methods("GET")
-	r.HandleFunc("/api/voting/vote", handlers.VoteHandler).Methods("POST")
+
+	r.HandleFunc("/api/voting/criteria", handlers.GetCriteria).Methods("GET")
+	r.HandleFunc("/api/voting/participants", handlers.GetParticipants).Methods("GET")
+	r.HandleFunc("/api/voting/vote", handlers.SubmitVote).Methods("POST")
 
 	// Здесь можно добавить больше маршрутов и обработчиков2
 	return r

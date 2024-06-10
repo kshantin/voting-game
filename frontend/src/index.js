@@ -22,7 +22,7 @@ const App = () => {
       <Switch>
         <Route component={Anounce} exact path="/anounce" />
         <Route component={Profile} exact path="/profile" />
-        <Route component={Voting} exact path="/voting" />
+        <Route component={Voting} exact path="/voting/:gameId" />
         <Route component={Login} exact path="/" />
         <Route component={Registr} exact path="/registr" />
         <Route component={CreateGame} exact path="/create-game" />

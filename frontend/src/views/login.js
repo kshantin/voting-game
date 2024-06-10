@@ -28,7 +28,7 @@ const Login = (props) => {
       if (response.status === 200) {
         localStorage.setItem('token', response.data.token);
         console.log('Login successful', response.data);
-        window.location.href = '/create-game'; // Example redirect
+        window.location.href = '/anounce'; // Example redirect
       } else {
         setError('Invalid credentials');
       }
