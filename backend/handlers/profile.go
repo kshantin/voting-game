@@ -17,9 +17,9 @@ func GetUserProfileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	conn := database.GetDB()
 	// Получение информации о пользователе
 	var user models.GetUser
-	conn := database.GetDB()
 	err = conn.QueryRow(context.Background(),
 		"SELECT id, email, username, createdat FROM users WHERE id=$1", userID).Scan(
 		&user.ID, &user.Email, &user.Username, &user.CreatedAt)
