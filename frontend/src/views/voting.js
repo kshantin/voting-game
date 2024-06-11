@@ -70,7 +70,7 @@ const Voting = () => {
       // Формируем данные голоса
       const votes = criteria.map((criterion) => ({
           gameId: parseInt(gameId),
-          voterId: 0, // Замените на идентификатор текущего пользователя
+          voterId: 5, // Замените на идентификатор текущего пользователя
           participantId: parseInt(selectedParticipants[criterion.id]),
           criterionId: parseInt(criterion.id),
       }));

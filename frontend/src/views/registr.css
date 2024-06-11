@@ -430,4 +430,7 @@
   .registr-link {
     color: rgb(1, 68, 203);
   }
+  .chart-container {
+    margin-top: 25px;
+  }
 }

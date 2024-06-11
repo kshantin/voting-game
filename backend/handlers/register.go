@@ -27,10 +27,28 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	userTest := models.User{
+	userTestOleg := models.User{
 		ID:       2,
 		Email:    "oleg@mail.ru",
-		Username: "oleg",
+		Username: "Oleg",
+		Password: "1234",
+	}
+	userTestMisha := models.User{
+		ID:       3,
+		Email:    "misha@mail.ru",
+		Username: "Misha",
+		Password: "1234",
+	}
+	userTestAnton := models.User{
+		ID:       4,
+		Email:    "anton@mail.ru",
+		Username: "Anton",
+		Password: "1234",
+	}
+	userTestJenia := models.User{
+		ID:       5,
+		Email:    "jenia@mail.ru",
+		Username: "Jenia",
 		Password: "1234",
 	}
 
@@ -41,13 +59,28 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to hash password", http.StatusInternalServerError)
 		return
 	}
-	hashedPasswordTest, _ := bcrypt.GenerateFromPassword(
-		[]byte(userTest.Password),
+	hashedPasswordTestOleg, _ := bcrypt.GenerateFromPassword(
+		[]byte(userTestOleg.Password),
+		bcrypt.DefaultCost,
+	)
+	hashedPasswordTestMisha, _ := bcrypt.GenerateFromPassword(
+		[]byte(userTestMisha.Password),
+		bcrypt.DefaultCost,
+	)
+	hashedPasswordTestAnton, _ := bcrypt.GenerateFromPassword(
+		[]byte(userTestAnton.Password),
+		bcrypt.DefaultCost,
+	)
+	hashedPasswordTestJenia, _ := bcrypt.GenerateFromPassword(
+		[]byte(userTestJenia.Password),
 		bcrypt.DefaultCost,
 	)
 
 	user.Password = string(hashedPassword)
-	userTest.Password = string(hashedPasswordTest)
+	userTestOleg.Password = string(hashedPasswordTestOleg)
+	userTestMisha.Password = string(hashedPasswordTestMisha)
+	userTestAnton.Password = string(hashedPasswordTestAnton)
+	userTestJenia.Password = string(hashedPasswordTestJenia)
 
 	// Подключение к базе данных
 	conn := database.GetDB()
@@ -63,9 +96,42 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Тестовый пользователь
-	_, err = conn.Exec(context.Background(),
+	conn.Exec(
+		context.Background(),
 		"INSERT INTO users (id, email, username, password, createdAt) VALUES ($1, $2, $3, $4, $5)",
-		userTest.ID, userTest.Email, userTest.Username, userTest.Password, time.Now())
+		userTestOleg.ID,
+		userTestOleg.Email,
+		userTestOleg.Username,
+		userTestOleg.Password,
+		time.Now(),
+	)
+	conn.Exec(
+		context.Background(),
+		"INSERT INTO users (id, email, username, password, createdAt) VALUES ($1, $2, $3, $4, $5)",
+		userTestMisha.ID,
+		userTestMisha.Email,
+		userTestMisha.Username,
+		userTestMisha.Password,
+		time.Now(),
+	)
+	conn.Exec(
+		context.Background(),
+		"INSERT INTO users (id, email, username, password, createdAt) VALUES ($1, $2, $3, $4, $5)",
+		userTestAnton.ID,
+		userTestAnton.Email,
+		userTestAnton.Username,
+		userTestAnton.Password,
+		time.Now(),
+	)
+	conn.Exec(
+		context.Background(),
+		"INSERT INTO users (id, email, username, password, createdAt) VALUES ($1, $2, $3, $4, $5)",
+		userTestJenia.ID,
+		userTestJenia.Email,
+		userTestJenia.Username,
+		userTestJenia.Password,
+		time.Now(),
+	)
 
 	if err != nil {
 		log.Printf("Error inserting user into database: %v", err)
@@ -74,7 +140,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("User registered successfully: %v", user.Email)
-	log.Printf("TEST User registered successfully: %v", userTest.Email)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
 }

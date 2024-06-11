@@ -3,12 +3,16 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { Helmet } from 'react-helmet';
 import Header from '../components/header';
+import { Bar } from 'react-chartjs-2';
+import 'chart.js/auto';
 import './profile.css';
 
 const Profile = (props) => {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState('');
   const [userID, setUserID] = useState(null);
+  const [criteria, setCriteria] = useState([]);
+  const [votes, setVotes] = useState([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -20,8 +24,7 @@ const Profile = (props) => {
         }
 
         const decodedToken = jwtDecode(token);
-        setUserID(decodedToken.userId); // Сохранение userID в состояние
-        console.log(userID);
+        setUserID(decodedToken.userId);
         const response = await axios.get('http://localhost:8080/api/profile', {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -33,8 +36,86 @@ const Profile = (props) => {
         console.error('Error fetching profile:', err);
       }
     };
-    fetchProfile(); 
+    fetchProfile();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const criteriaResponse = await axios.get('http://localhost:8080/api/voting/criteria');
+        setCriteria(criteriaResponse.data);
+
+        if (profile && profile.games) {
+          const gameIds = profile.games.map(game => game.id);
+          const votesResponse = await axios.get('http://localhost:8080/api/voting/votes', {
+            params: { gameIds: gameIds.join(',') }
+          });
+          setVotes(votesResponse.data);
+        }
+      } catch (err) {
+        setError(`Failed to fetch voting data: ${err.message}`);
+        console.error('Error fetching voting data:', err);
+      }
+    };
+
+    if (profile) {
+      fetchData();
+    }
+  }, [profile]);
+
+  const getVoteCounts = () => {
+    return criteria.map(criterion => {
+      // Фильтруем голоса по критерию и номинанту (participantId)
+      const votesForCriterion = votes.filter(vote => vote.criterionId === criterion.id && vote.participantId === userID);
+      return votesForCriterion.length;
+    });
+  };
+
+  const voteCounts = getVoteCounts();
+
+  const chartData = {
+    labels: criteria.map(criterion => criterion.name),
+    datasets: [
+      {
+        label: 'Количество голосов за пользователя',
+        data: voteCounts,
+        backgroundColor: 'rgba(255, 255, 255, 0.6)', // Белый цвет с прозрачностью
+        borderColor: 'rgba(255, 255, 255, 1)', // Белый цвет
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 10,
+        ticks: {
+          color: 'white',
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.2)',
+        }
+      },
+      x: {
+        ticks: {
+          color: 'white',
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.2)',
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        labels: {
+          color: 'white',
+        }
+      }
+    },
+    maintainAspectRatio: false,
+  };
 
   if (error) {
     return <div className="error">{error}</div>;
@@ -86,6 +167,12 @@ const Profile = (props) => {
               <span>1</span>
               <br />
             </span>
+          </div>
+        </div>
+        <div className="chart-container" style={{ backgroundColor: '#0E91EF', padding: '20px', borderRadius: '10px', marginBottom: '20px' }}>
+          <h2 style={{ color: 'white' }}>Результаты голосования</h2>
+          <div style={{ height: '400px', width: '100%' }}>
+            <Bar data={chartData} options={chartOptions} />
           </div>
         </div>
         {profile.games.map((game) => (
