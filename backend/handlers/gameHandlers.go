@@ -10,6 +10,8 @@ import (
 
 	"backend/database"
 	"backend/models"
+
+	"github.com/gorilla/mux"
 )
 
 func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
@@ -98,6 +100,41 @@ func GetGamesHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(games); err != nil {
+		http.Error(w, fmt.Sprintf("JSON encoding error: %v", err), http.StatusInternalServerError)
+	}
+}
+
+func GetGameHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	gameID := vars["gameId"]
+
+	conn := database.GetDB()
+	row := conn.QueryRow(
+		context.Background(),
+		"SELECT id, gameName, numberOfPlayers, currentPlayers, description, date, time, createdBy, createdAt FROM games WHERE id=$1",
+		gameID,
+	)
+
+	var game models.Game
+	err := row.Scan(
+		&game.ID,
+		&game.GameName,
+		&game.NumberOfPlayers,
+		&game.CurrentPlayers,
+		&game.Description,
+		&game.Date,
+		&game.Time,
+		&game.CreatedBy,
+		&game.CreatedAt,
+	)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Database query error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(game); err != nil {
 		http.Error(w, fmt.Sprintf("JSON encoding error: %v", err), http.StatusInternalServerError)
 	}
 }

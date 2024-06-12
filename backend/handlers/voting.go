@@ -104,3 +104,34 @@ func SubmitVote(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	fmt.Println("Votes submitted successfully")
 }
+
+// Получить статус голосования
+func GetVotingStatus(w http.ResponseWriter, r *http.Request) {
+	gameId := r.URL.Query().Get("gameId")
+
+	conn := database.GetDB()
+	var votingClosed bool
+	err := conn.QueryRow(context.Background(), "SELECT voting_closed FROM games WHERE id=$1", gameId).Scan(&votingClosed)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]bool{"votingClosed": votingClosed}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// Закрыть голосование
+func CloseVoting(w http.ResponseWriter, r *http.Request) {
+	gameId := r.URL.Query().Get("gameId")
+
+	conn := database.GetDB()
+	_, err := conn.Exec(context.Background(), "UPDATE games SET voting_closed = TRUE WHERE id=$1", gameId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
